@@ -122,16 +122,20 @@ interface LocationResult {
   code: string;
 }
 
-export const getDataLocation = (
-  unitCode: string
-): Promise<AxiosResponse<LocationResult, any>> =>
+export const getDataLocation = ({
+  unitCode,
+  pageNo = 1,
+}: {
+  unitCode?: string;
+  pageNo?: number;
+}): Promise<AxiosResponse<LocationResult, any>> =>
   instanceLocation.get("", {
     params: {
       key: "7783395713",
       type: "json",
       unitCode,
       numOfRows: 10,
-      pageNo: 1,
+      pageNo,
     },
   });
 
@@ -238,15 +242,16 @@ export const getDataResultLCS = (
 const instanceAVC = axios.create({
   baseURL: "http://data.ex.co.kr/openapi/avcinfo/avcOg15DataList",
 });
+
 export interface AVC {
-  routeNo: string;
-  routeNm: string;
-  avcId: string;
   totlDates: string;
   totlHhmm: string;
+  avcId: string;
   crgwNo: string;
   drctClssCd: string;
   gthrDetlDates: string;
+  routeNo: string;
+  routeNm: string;
   cnznId: string;
   cnznNm: string;
   roadDstnc: string;
@@ -278,6 +283,7 @@ export interface AVC {
   trfv12: string;
   ucsdKncrTrfv: string;
 }
+
 interface ResultAVC {
   list: AVC[];
   count: number;
@@ -288,11 +294,130 @@ interface ResultAVC {
   code: string;
 }
 
-export const getDataAvc = (): Promise<AxiosResponse<ResultAVC, any>> =>
+export const getDataAvc = (
+  totlDates: string
+): Promise<AxiosResponse<ResultAVC, any>> =>
   instanceAVC.get<ResultAVC>("", {
     params: {
       key: "7783395713",
       type: "json",
-      totlDates: "20211016",
+      totlDates,
     },
   });
+
+interface IVDSLIST {
+  vdsId: string; //	VDS_ID
+  grs80x: string; //	GRS80X좌표값
+  grs80y: string; //	GRS80Y좌표값
+  shift: string; //	지점이정
+  vdsStartShift: string; //	VDS존시작이정
+  vdsEndShift: string; //	VDS존종료이정
+  routeNo: string; //	노선번호
+  routeName: string; //	도로명
+  vdsCode: string; //	VDS존유형구분코드
+  vdsName: string; //	VDS존유형구분명
+  routeSeq: string; //	노선구성순번
+  directionCode: string; //	기점종점방향구분코드
+  vdsLength: string; //	VDS존길이
+  roadgradeCode: string; //	도로등급구분코드
+  roadgradeName: string; //	도로등급구분명
+  equipmentBelongingCode: string; //	장비소속구분코드
+  equipmentBelongingName: string; //	장비소속구분명
+  czId: string; //	콘존ID
+  pageNo: string; //	출력 페이지번호
+  numOfRows: string; //	한 페이지당 출력건수
+  //pageSize: string; //	총 페이지건수
+}
+
+interface IVDSRESULT {
+  count: number;
+  list: IVDSLIST[];
+  pageNo: string; //	출력 페이지번호
+  numOfRows: string; //	한 페이지당 출력건수
+  pageSize: string;
+  message: string;
+  code: string;
+}
+export const getDataVDS = (
+  pageNo: number
+): Promise<AxiosResponse<IVDSRESULT, any>> =>
+  axios.get("http://data.ex.co.kr/openapi/vdsinfo/vdsList", {
+    params: {
+      key: "7783395713",
+      type: "json",
+      numOfRows: "100",
+      pageNo,
+    },
+  });
+
+interface IAVCInstall {
+  avcId: string; //AVC_ID
+  shift: string; //이정
+  registDate: string; //등록일
+  routeNo: string; //노선번호
+  routeName: string; //도로명
+  centerCode: string; //지역본부코드
+  centerName: string; //지역본부명
+  brofCode: string; //지사코드
+  brofName: string; //지사명
+  latitude: string; //위도값
+  longitude: string; //경도값
+  roadgradeCode: string; //도로등급구분코드
+  roadgradeName: string; //도로등급구분명
+  equipmentBelongingCode: string; //장비소속구분코드
+  equipmentBelongingName: string; //장비소속구분명
+  pageNo: string; //	출력 페이지번호
+  numOfRows: string; //	한 페이지당 출력건수
+}
+
+interface IAVCInstallRESULT {
+  count: number;
+  list: IAVCInstall[];
+  pageNo: string; //	출력 페이지번호
+  numOfRows: string; //	한 페이지당 출력건수
+  pageSize: string;
+  message: string;
+  code: string;
+}
+
+export const getAVCInstallData = (
+  pageNo: number
+): Promise<AxiosResponse<IAVCInstallRESULT, any>> =>
+  axios.get("http://data.ex.co.kr/openapi/avcinfo/avcList", {
+    params: {
+      key: "7783395713",
+      type: "json",
+      numOfRows: "100",
+      pageNo,
+    },
+  });
+
+export interface IAll15Result {
+  count: number;
+  list: {
+
+  }[]
+}
+
+// export const get15All = ({
+//   collectDate,
+//   collectTime,
+//   pageNo,
+// }: {
+//   collectDate: string;
+//   collectTime: string;
+//   pageNo: number;
+// }) =>
+//   axios.get(
+//     "http://data.ex.co.kr/openapi/trafficapi/sectionTrafficRouteDirection",
+//     {
+//       params: {
+//         key: "7783395713",
+//         type: "json",
+//         collectDate,
+//         collectTime,
+//         numOfRows: 100,
+//         pageNo,
+//       },
+//     }
+//   );
